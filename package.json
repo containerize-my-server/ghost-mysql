@@ -1,0 +1,20 @@
+{
+  "name": "blog.knappi.org",
+  "version": "1.0.0",
+  "description": "Docker-Setup for the domain blog.knappi.org",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/nknapp/blog.knappi.org.git"
+  },
+  "author": "Nils Knappmeier",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://gitlab.com/nknapp/blog.knappi.org/issues"
+  },
+  "homepage": "https://gitlab.com/nknapp/blog.knappi.org#README",
+  "dependencies": {
+    "GoClean": "github:nknapp/GoClean"
+  }
+}

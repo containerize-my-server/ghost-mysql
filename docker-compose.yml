@@ -1,0 +1,64 @@
+version: '2'
+
+services:
+
+  # A machine for running https://ghost.org
+  ghost:
+    build: ghost/
+    labels:
+    # Configure reverse-proxy to forward to this machine
+    - "traefik.enable=true"
+    - "traefik.backend=ghost_${BLOG_DOMAIN}"
+    - "traefik.frontend.rule=Host:${BLOG_DOMAIN}"
+    - "traefik.docker.network=reverseproxy_default"
+
+    networks:
+    # Must be in the same network as the reverse-proxy
+    # (see https://github.com/docker-compose-examples/reverse-proxy)
+    - "reverseproxy_default"
+    # Must also be in the same network as mysql
+    - "default"
+    restart: always
+    environment:
+      BLOG_DOMAIN: "${BLOG_DOMAIN}"
+      NODE_ENV: "${NODE_ENV}"
+      MYSQL_PASSWORD: "${MYSQL_GHOST_PASSWORD}"
+    volumes:
+      -  ghost-data:/var/lib/ghost
+      -  ./${CUSTOM_THEME_DIR}:/var/lib/ghost/themes/custom-theme
+
+  # MySQL as storage backend
+  mysql:
+    build: mysql/
+    networks:
+    - "default"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: ghost_db
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: "${MYSQL_GHOST_PASSWORD}"
+    volumes:
+      -  data:/var/lib/mysql
+
+  # Container to run npm_install at startup
+  # e.g. in order to install custom theme
+  npm_install:
+    build: npm_install/
+    volumes:
+      - .:/project
+    working_dir: /project
+    command: "npm install"
+
+volumes:
+  # MySQL storage (blog content)
+  data: {}
+  # Storage for themes e.g. (except custom-theme)
+  ghost-data: {}
+
+networks:
+  # Local network
+  default: {}
+  # Shared network (created by https://github.com/docker-compose-examples/reverse-proxy)
+  reverseproxy_default:
+    external:
+      name: reverseproxy_default
