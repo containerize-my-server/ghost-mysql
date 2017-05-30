@@ -17,7 +17,7 @@ services:
     # (see https://github.com/docker-compose-examples/reverse-proxy)
     - "reverseproxy_default"
     # Must also be in the same network as mysql
-    - "default"
+    - "ghost_mysql_default"
     restart: always
     environment:
       BLOG_DOMAIN: "${BLOG_DOMAIN}"
@@ -31,7 +31,7 @@ services:
   mysql:
     build: mysql/
     networks:
-    - "default"
+    - "ghost_mysql_default"
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
       MYSQL_DATABASE: ghost_db
@@ -57,7 +57,7 @@ volumes:
 
 networks:
   # Local network
-  default: {}
+  ghost_mysql_default: {}
   # Shared network (created by https://github.com/docker-compose-examples/reverse-proxy)
   reverseproxy_default:
     external:
